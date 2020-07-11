@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer");
+const delay = require("delay");
 const fs = require("fs");
 const tanya = require("readline-sync");
+const { del } = require("request");
 const LoginAndCheck = (mail, pass) =>
   new Promise((resolve, reject) => {
     (async () => {
@@ -39,6 +41,14 @@ const LoginAndCheck = (mail, pass) =>
             )
           ).getProperty("textContent")
         ).jsonValue();
+        let data = `${mail}|${pass}\n`;
+        if (saldoAwal.match(/150/g)) {
+          fs.appendFileSync("valid_150.txt", data);
+        } else if (saldoAwal.match(/23/g)) {
+          fs.appendFileSync("valid_230an.txt", data);
+        } else {
+          fs.appendFileSync("valid_lain.txt", data);
+        }
         resolve(`${saldoAkhir}/${saldoAwal}`);
       } catch (error) {
         resolve("false");
